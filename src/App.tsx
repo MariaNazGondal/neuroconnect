@@ -10,12 +10,16 @@ import { Dashboard } from './components/Dashboard';
 import { Forum } from './components/Forum';
 import { EventsMap } from './components/EventsMap';
 import { Glossary } from './components/Glossary';
+import { DocumentScanner } from './components/DocumentScanner';
+import { ResourceMarket } from './components/ResourceMarket';
+import { LocalHub } from './components/LocalHub';
+import { RightsAssistant } from './components/RightsAssistant';
 import { AuthModal } from './components/AuthModal';
 import { ProfileModal } from './components/ProfileModal';
 import { Heart, Globe, Shield, Sparkles, MapPin } from 'lucide-react';
 
 function AppContent() {
-  const [currentTab, setCurrentTab] = useState<'dashboard' | 'forum' | 'map' | 'glossary'>('dashboard');
+  const [currentTab, setCurrentTab] = useState<'dashboard' | 'forum' | 'map' | 'glossary' | 'decoder' | 'exchange' | 'hub' | 'rights'>('dashboard');
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const { profile } = useAuth();
@@ -41,8 +45,24 @@ function AppContent() {
           />
         )}
 
+        {currentTab === 'hub' && (
+          <LocalHub onOpenAuth={() => setIsAuthOpen(true)} />
+        )}
+
+        {currentTab === 'rights' && (
+          <RightsAssistant />
+        )}
+
         {currentTab === 'forum' && (
           <Forum onOpenAuth={() => setIsAuthOpen(true)} />
+        )}
+
+        {currentTab === 'decoder' && (
+          <DocumentScanner />
+        )}
+
+        {currentTab === 'exchange' && (
+          <ResourceMarket onOpenAuth={() => setIsAuthOpen(true)} />
         )}
 
         {currentTab === 'map' && (
@@ -69,13 +89,21 @@ function AppContent() {
             </div>
 
             <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-medium text-[#415d55]">
-              <button onClick={() => setCurrentTab('dashboard')} className="hover:underline">Home</button>
+              <button onClick={() => setCurrentTab('dashboard')} className="hover:underline cursor-pointer">Home</button>
               <span>•</span>
-              <button onClick={() => setCurrentTab('forum')} className="hover:underline">Community Channels</button>
+              <button onClick={() => setCurrentTab('hub')} className="hover:underline cursor-pointer">Kommune Hubs</button>
               <span>•</span>
-              <button onClick={() => setCurrentTab('map')} className="hover:underline">Events & Places Map</button>
+              <button onClick={() => setCurrentTab('rights')} className="hover:underline cursor-pointer">Rights AI</button>
               <span>•</span>
-              <button onClick={() => setCurrentTab('glossary')} className="hover:underline">Danish Glossary</button>
+              <button onClick={() => setCurrentTab('forum')} className="hover:underline cursor-pointer">Channels</button>
+              <span>•</span>
+              <button onClick={() => setCurrentTab('decoder')} className="hover:underline cursor-pointer">Decoder</button>
+              <span>•</span>
+              <button onClick={() => setCurrentTab('exchange')} className="hover:underline cursor-pointer">Exchange</button>
+              <span>•</span>
+              <button onClick={() => setCurrentTab('map')} className="hover:underline cursor-pointer">Events Map</button>
+              <span>•</span>
+              <button onClick={() => setCurrentTab('glossary')} className="hover:underline cursor-pointer">Glossary</button>
             </div>
           </div>
 

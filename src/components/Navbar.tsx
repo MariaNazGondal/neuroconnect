@@ -12,14 +12,18 @@ import {
   X, 
   Sparkles,
   Globe,
-  Sun
+  Sun,
+  FileText,
+  Package,
+  Building2,
+  Scale
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { SUPPORTED_LANGUAGES } from '../data/danishMunicipalities';
 
 interface NavbarProps {
-  currentTab: 'dashboard' | 'forum' | 'map' | 'glossary';
-  onSelectTab: (tab: 'dashboard' | 'forum' | 'map' | 'glossary') => void;
+  currentTab: 'dashboard' | 'forum' | 'map' | 'glossary' | 'decoder' | 'exchange' | 'hub' | 'rights';
+  onSelectTab: (tab: 'dashboard' | 'forum' | 'map' | 'glossary' | 'decoder' | 'exchange' | 'hub' | 'rights') => void;
   onOpenAuth: () => void;
   onOpenProfile: () => void;
 }
@@ -58,53 +62,101 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Navigation Links - Desktop */}
-          <nav className="hidden md:flex items-center gap-1 bg-[#eaf0ed] p-1.5 rounded-xl border border-[#d6e2dc]">
+          <nav className="hidden xl:flex items-center gap-1 bg-[#eaf0ed] p-1.5 rounded-xl border border-[#d6e2dc]">
             <button
               onClick={() => onSelectTab('dashboard')}
-              className={`flex items-center gap-2 px-3.5 py-1.5 text-sm font-medium rounded-lg transition-all ${
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
                 currentTab === 'dashboard'
                   ? 'bg-white text-[#203932] shadow-xs'
                   : 'text-[#4e645e] hover:text-[#1c2e29] hover:bg-white/50'
               }`}
             >
-              <Heart className="w-4 h-4 text-[#52776c]" />
+              <Heart className="w-3.5 h-3.5 text-[#52776c]" />
               <span>Home</span>
             </button>
 
             <button
+              onClick={() => onSelectTab('hub')}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                currentTab === 'hub'
+                  ? 'bg-white text-[#203932] shadow-xs'
+                  : 'text-[#4e645e] hover:text-[#1c2e29] hover:bg-white/50'
+              }`}
+            >
+              <Building2 className="w-3.5 h-3.5 text-[#52776c]" />
+              <span>Kommune Hubs</span>
+            </button>
+
+            <button
+              onClick={() => onSelectTab('rights')}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                currentTab === 'rights'
+                  ? 'bg-white text-[#203932] shadow-xs'
+                  : 'text-[#4e645e] hover:text-[#1c2e29] hover:bg-white/50'
+              }`}
+            >
+              <Scale className="w-3.5 h-3.5 text-[#52776c]" />
+              <span>Rights AI</span>
+            </button>
+
+            <button
               onClick={() => onSelectTab('forum')}
-              className={`flex items-center gap-2 px-3.5 py-1.5 text-sm font-medium rounded-lg transition-all ${
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
                 currentTab === 'forum'
                   ? 'bg-white text-[#203932] shadow-xs'
                   : 'text-[#4e645e] hover:text-[#1c2e29] hover:bg-white/50'
               }`}
             >
-              <MessageSquare className="w-4 h-4 text-[#52776c]" />
-              <span>Community Channels</span>
+              <MessageSquare className="w-3.5 h-3.5 text-[#52776c]" />
+              <span>Channels</span>
+            </button>
+
+            <button
+              onClick={() => onSelectTab('decoder')}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                currentTab === 'decoder'
+                  ? 'bg-white text-[#203932] shadow-xs'
+                  : 'text-[#4e645e] hover:text-[#1c2e29] hover:bg-white/50'
+              }`}
+            >
+              <FileText className="w-3.5 h-3.5 text-[#52776c]" />
+              <span>Decoder</span>
+            </button>
+
+            <button
+              onClick={() => onSelectTab('exchange')}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                currentTab === 'exchange'
+                  ? 'bg-white text-[#203932] shadow-xs'
+                  : 'text-[#4e645e] hover:text-[#1c2e29] hover:bg-white/50'
+              }`}
+            >
+              <Package className="w-3.5 h-3.5 text-[#52776c]" />
+              <span>Exchange</span>
             </button>
 
             <button
               onClick={() => onSelectTab('map')}
-              className={`flex items-center gap-2 px-3.5 py-1.5 text-sm font-medium rounded-lg transition-all ${
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
                 currentTab === 'map'
                   ? 'bg-white text-[#203932] shadow-xs'
                   : 'text-[#4e645e] hover:text-[#1c2e29] hover:bg-white/50'
               }`}
             >
-              <MapIcon className="w-4 h-4 text-[#52776c]" />
-              <span>Events & Places</span>
+              <MapIcon className="w-3.5 h-3.5 text-[#52776c]" />
+              <span>Events Map</span>
             </button>
 
             <button
               onClick={() => onSelectTab('glossary')}
-              className={`flex items-center gap-2 px-3.5 py-1.5 text-sm font-medium rounded-lg transition-all ${
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
                 currentTab === 'glossary'
                   ? 'bg-white text-[#203932] shadow-xs'
                   : 'text-[#4e645e] hover:text-[#1c2e29] hover:bg-white/50'
               }`}
             >
-              <BookOpen className="w-4 h-4 text-[#52776c]" />
-              <span>Danish Glossary</span>
+              <BookOpen className="w-3.5 h-3.5 text-[#52776c]" />
+              <span>Glossary</span>
             </button>
           </nav>
 
@@ -180,6 +232,24 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span>Dashboard</span>
           </button>
           <button
+            onClick={() => { onSelectTab('hub'); setMobileMenuOpen(false); }}
+            className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-left ${
+              currentTab === 'hub' ? 'bg-white text-[#1f342e]' : 'text-[#48615a]'
+            }`}
+          >
+            <Building2 className="w-4 h-4 text-[#52776c]" />
+            <span>Kommune Hubs (Parents & Meetups)</span>
+          </button>
+          <button
+            onClick={() => { onSelectTab('rights'); setMobileMenuOpen(false); }}
+            className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-left ${
+              currentTab === 'rights' ? 'bg-white text-[#1f342e]' : 'text-[#48615a]'
+            }`}
+          >
+            <Scale className="w-4 h-4 text-[#52776c]" />
+            <span>Danish Rights AI Assistant</span>
+          </button>
+          <button
             onClick={() => { onSelectTab('forum'); setMobileMenuOpen(false); }}
             className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-left ${
               currentTab === 'forum' ? 'bg-white text-[#1f342e]' : 'text-[#48615a]'
@@ -187,6 +257,24 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <MessageSquare className="w-4 h-4 text-[#52776c]" />
             <span>Community Channels (Forum)</span>
+          </button>
+          <button
+            onClick={() => { onSelectTab('decoder'); setMobileMenuOpen(false); }}
+            className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-left ${
+              currentTab === 'decoder' ? 'bg-white text-[#1f342e]' : 'text-[#48615a]'
+            }`}
+          >
+            <FileText className="w-4 h-4 text-[#52776c]" />
+            <span>Kommune Letter Decoder</span>
+          </button>
+          <button
+            onClick={() => { onSelectTab('exchange'); setMobileMenuOpen(false); }}
+            className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-left ${
+              currentTab === 'exchange' ? 'bg-white text-[#1f342e]' : 'text-[#48615a]'
+            }`}
+          >
+            <Package className="w-4 h-4 text-[#52776c]" />
+            <span>Sensory Resource Exchange</span>
           </button>
           <button
             onClick={() => { onSelectTab('map'); setMobileMenuOpen(false); }}

@@ -20,6 +20,8 @@ export interface UserProfileData {
   preferredLanguage: string;
   kommune: string;
   bio?: string;
+  optInConnect?: boolean;
+  childAgeGroup?: '0-5' | '6-12' | '13+';
   createdAt: string;
   updatedAt?: string;
 }

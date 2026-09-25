@@ -2,14 +2,17 @@ import React, { useState } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from '../firebase/config';
 import { Send, Sparkles, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { AudioRecorder } from './AudioAccessibility';
+import { AgeTagSelector } from './TagSystem';
 
 /**
  * CreatePost Component
  * Submits a new post to the 'posts' collection in Firestore.
  * 
- * IMPORTANT: It ONLY writes the raw `content`, `authorId`, and `createdAt` fields
- * so the Firebase Extension (firestore-translate-text) cleanly intercepts the document
- * create event and appends the `translations` map field automatically in the cloud.
+ * Includes:
+ * - Mandatory child age group selector (0-5, 6-12, 13+)
+ * - Optional voice note audio recorder
+ * - Cloud translation hook via 'firestore-translate-text'
  *
  * @param {Object} props
  * @param {string} [props.authorId] - Optional current user ID override
@@ -17,6 +20,9 @@ import { Send, Sparkles, AlertCircle, CheckCircle2 } from 'lucide-react';
  */
 export function CreatePost({ authorId, onPostCreated }) {
   const [content, setContent] = useState('');
+  const [ageTag, setAgeTag] = useState('');
+  const [audioUrl, setAudioUrl] = useState(null);
+  const [ageError, setAgeError] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -24,6 +30,13 @@ export function CreatePost({ authorId, onPostCreated }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!content.trim()) return;
+
+    // Validate mandatory age tag
+    if (!ageTag) {
+      setAgeError(true);
+      return;
+    }
+    setAgeError(false);
 
     // Use passed authorId or current logged-in user
     const currentUid = authorId || auth.currentUser?.uid || 'user_anonymous';
@@ -33,17 +46,21 @@ export function CreatePost({ authorId, onPostCreated }) {
 
     try {
       /**
-       * CRITICAL: We ONLY write the raw `content`, `authorId`, and serverTimestamp.
+       * CRITICAL: We write the raw `content`, `authorId`, `ageTag`, `audioUrl` and serverTimestamp.
        * Do NOT write any client-generated `translations` object so the extension
        * triggers properly without schema conflicts.
        */
       const docRef = await addDoc(collection(db, 'posts'), {
         content: content.trim(),
         authorId: currentUid,
+        ageTag: ageTag,
+        audioUrl: audioUrl || null,
         createdAt: serverTimestamp(),
       });
 
       setContent('');
+      setAgeTag('');
+      setAudioUrl(null);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
 
@@ -65,7 +82,7 @@ export function CreatePost({ authorId, onPostCreated }) {
         <div>
           <h3 className="text-sm font-bold text-[#1f312c]">Share with the Parent Community</h3>
           <p className="text-xs text-[#59756e]">
-            Write in your comfortable language. Cloud auto-translation will translate your post for other families.
+            Write in your comfortable language. Cloud auto-translation and voice accessibility are enabled.
           </p>
         </div>
       </div>
@@ -80,12 +97,23 @@ export function CreatePost({ authorId, onPostCreated }) {
       {success && (
         <div className="mb-3 p-3 text-xs text-[#2b5446] bg-[#eef7f2] border border-[#cbe5d7] rounded-xl flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-          <span>Post published! Cloud translations are processing automatically.</span>
+          <span>Post published! Cloud translations and audio are processing.</span>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-3">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* 1. Mandatory Age Group Selector */}
+        <AgeTagSelector 
+          selectedTag={ageTag} 
+          onChange={(tag) => { setAgeTag(tag); setAgeError(false); }}
+          error={ageError}
+        />
+
+        {/* 2. Content Textarea */}
         <div className="relative">
+          <label className="block text-xs font-semibold text-[#293e38] mb-1">
+            Discussion Content
+          </label>
           <textarea
             required
             rows={4}
@@ -96,6 +124,14 @@ export function CreatePost({ authorId, onPostCreated }) {
           />
         </div>
 
+        {/* 3. Audio Recording Tool */}
+        <AudioRecorder 
+          onAudioRecorded={(blob, url) => setAudioUrl(url)}
+          onAudioCleared={() => setAudioUrl(null)}
+          existingAudioUrl={audioUrl}
+        />
+
+        {/* 4. Action bar */}
         <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
           <div className="flex items-center gap-1.5 text-xs text-[#638077]">
             <Sparkles className="w-3.5 h-3.5 text-[#517b6f]" />

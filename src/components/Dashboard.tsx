@@ -13,14 +13,18 @@ import {
   Calendar,
   Users,
   Compass,
-  FileText
+  FileText,
+  Package,
+  Camera,
+  Building2,
+  Scale
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { SEED_POSTS, SEED_EVENTS } from '../data/seedData';
 import { SUPPORTED_LANGUAGES } from '../data/danishMunicipalities';
 
 interface DashboardProps {
-  onSelectTab: (tab: 'dashboard' | 'forum' | 'map' | 'glossary') => void;
+  onSelectTab: (tab: 'dashboard' | 'forum' | 'map' | 'glossary' | 'decoder' | 'exchange' | 'hub' | 'rights') => void;
   onOpenAuth: () => void;
   onOpenProfile: () => void;
 }
@@ -132,6 +136,119 @@ export const Dashboard: React.FC<DashboardProps> = ({
             Find Sunflower Venues on Map
           </button>
         </div>
+      </div>
+
+      {/* High-Utility Features: Kommune Hubs, Rights AI, Decoder & Exchange */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        
+        {/* Kommune Hubs */}
+        <div 
+          onClick={() => onSelectTab('hub')}
+          className="bg-white p-5 sm:p-6 rounded-3xl border border-[#d6e2dc] shadow-xs hover:border-[#426a5e] transition-all cursor-pointer group flex flex-col justify-between"
+        >
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="w-10 h-10 rounded-2xl bg-[#e8f1ec] text-[#2c5246] flex items-center justify-center">
+                <Building2 className="w-5 h-5" />
+              </div>
+              <span className="text-[11px] font-bold bg-[#edf5f1] text-[#294c3f] px-2.5 py-0.5 rounded-full">
+                Zero Map API • 100% Free
+              </span>
+            </div>
+            <h3 className="text-base font-bold text-[#1a2e28] group-hover:text-[#2c5246] transition-colors">
+              Local Kommune Hubs
+            </h3>
+            <p className="text-xs text-[#506c64] leading-relaxed">
+              Find parents and offline meetups in your Danish municipality (Kommune). Privacy-first directory with opt-in connection and child age groups.
+            </p>
+          </div>
+          <div className="pt-3 border-t border-[#edf3f0] flex items-center gap-1.5 text-xs font-semibold text-[#3b5d53]">
+            <span>Connect with parents in your Kommune</span>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+          </div>
+        </div>
+
+        {/* Rights AI Fact-Checker */}
+        <div 
+          onClick={() => onSelectTab('rights')}
+          className="bg-white p-5 sm:p-6 rounded-3xl border border-[#d6e2dc] shadow-xs hover:border-[#426a5e] transition-all cursor-pointer group flex flex-col justify-between"
+        >
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="w-10 h-10 rounded-2xl bg-[#f2eef8] text-[#55367b] flex items-center justify-center">
+                <Scale className="w-5 h-5" />
+              </div>
+              <span className="text-[11px] font-bold bg-[#f7f3fd] text-[#523377] px-2.5 py-0.5 rounded-full">
+                Barnets Lov & Rights
+              </span>
+            </div>
+            <h3 className="text-base font-bold text-[#1a2e28] group-hover:text-[#2c5246] transition-colors">
+              Danish Rights AI Assistant
+            </h3>
+            <p className="text-xs text-[#506c64] leading-relaxed">
+              Ask about PPR evaluations, lost earnings (§ 87 Tabt arbejdsfortjeneste), extra expense reimbursements (§ 86 Merudgifter), and rights to an interpreter.
+            </p>
+          </div>
+          <div className="pt-3 border-t border-[#edf3f0] flex items-center gap-1.5 text-xs font-semibold text-[#3b5d53]">
+            <span>Ask a legal question in your language</span>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+          </div>
+        </div>
+
+        {/* Letter Decoder */}
+        <div 
+          onClick={() => onSelectTab('decoder')}
+          className="bg-white p-5 rounded-3xl border border-[#d6e2dc] shadow-xs hover:border-[#426a5e] transition-all cursor-pointer group flex flex-col justify-between"
+        >
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="w-10 h-10 rounded-2xl bg-[#e6f1ec] text-[#34594f] flex items-center justify-center">
+                <Camera className="w-5 h-5" />
+              </div>
+              <span className="text-[11px] font-bold bg-[#eef5f1] text-[#315147] px-2.5 py-0.5 rounded-full">
+                AI Powered • Free
+              </span>
+            </div>
+            <h3 className="text-base font-bold text-[#1a2e28] group-hover:text-[#2c5246] transition-colors">
+              Kommune Letter Decoder
+            </h3>
+            <p className="text-xs text-[#506c64] leading-relaxed">
+              Snap a photo of an official letter from PPR or the municipality. Get a clear simplified summary in your preferred language, key deadlines (*frister*), and what to reply.
+            </p>
+          </div>
+          <div className="pt-3 border-t border-[#edf3f0] flex items-center gap-1.5 text-xs font-semibold text-[#3b5d53]">
+            <span>Scan or test a letter now</span>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+          </div>
+        </div>
+
+        {/* Sensory Exchange */}
+        <div 
+          onClick={() => onSelectTab('exchange')}
+          className="bg-white p-5 rounded-3xl border border-[#d6e2dc] shadow-xs hover:border-[#426a5e] transition-all cursor-pointer group flex flex-col justify-between"
+        >
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="w-10 h-10 rounded-2xl bg-[#f5ede3] text-[#6d4c20] flex items-center justify-center">
+                <Package className="w-5 h-5" />
+              </div>
+              <span className="text-[11px] font-bold bg-[#faf3ea] text-[#66461b] px-2.5 py-0.5 rounded-full">
+                Free & Fair Trade
+              </span>
+            </div>
+            <h3 className="text-base font-bold text-[#1a2e28] group-hover:text-[#2c5246] transition-colors">
+              Sensory Resource Exchange
+            </h3>
+            <p className="text-xs text-[#506c64] leading-relaxed">
+              Sensory items are expensive. Swap, donate, or find affordable weighted blankets, visual timers, noise-cancelling ear defenders, and pictograms from other parents.
+            </p>
+          </div>
+          <div className="pt-3 border-t border-[#edf3f0] flex items-center gap-1.5 text-xs font-semibold text-[#3b5d53]">
+            <span>Browse community exchange board</span>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+          </div>
+        </div>
+
       </div>
 
       {/* Three Pillars for Immigrant Families */}

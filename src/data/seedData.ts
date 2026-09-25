@@ -10,6 +10,8 @@ export interface SeedPost {
   likesCount: number;
   commentsCount: number;
   createdAt: string;
+  ageTag?: '0-5' | '6-12' | '13+';
+  audioUrl?: string;
   translations?: Record<string, string>;
   comments?: Array<{
     id: string;
@@ -47,6 +49,7 @@ export const SEED_POSTS: SeedPost[] = [
     authorName: 'Olena K.',
     authorKommune: 'København',
     authorLanguage: 'da',
+    ageTag: '0-5',
     likesCount: 14,
     commentsCount: 3,
     createdAt: '2026-03-20T10:15:00Z',
@@ -91,6 +94,7 @@ export const SEED_POSTS: SeedPost[] = [
     authorName: 'Tariq & Leila',
     authorKommune: 'Albertslund',
     authorLanguage: 'en',
+    ageTag: '6-12',
     likesCount: 19,
     commentsCount: 2,
     createdAt: '2026-03-18T16:20:00Z',
@@ -120,6 +124,7 @@ export const SEED_POSTS: SeedPost[] = [
     authorName: 'Mariam D.',
     authorKommune: 'Rødovre',
     authorLanguage: 'en',
+    ageTag: '0-5',
     likesCount: 23,
     commentsCount: 2,
     createdAt: '2026-03-15T12:00:00Z',
@@ -149,6 +154,7 @@ export const SEED_POSTS: SeedPost[] = [
     authorName: 'Mehmet Y.',
     authorKommune: 'Aarhus',
     authorLanguage: 'en',
+    ageTag: '6-12',
     likesCount: 16,
     commentsCount: 1,
     createdAt: '2026-03-12T14:10:00Z',
@@ -171,6 +177,7 @@ export const SEED_POSTS: SeedPost[] = [
     authorName: 'Samira Noor',
     authorKommune: 'København',
     authorLanguage: 'en',
+    ageTag: '13+',
     likesCount: 28,
     commentsCount: 2,
     createdAt: '2026-03-10T09:00:00Z',

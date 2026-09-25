@@ -15,6 +15,8 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
   const [kommune, setKommune] = useState(profile?.kommune || 'København');
   const [language, setLanguage] = useState(profile?.preferredLanguage || 'en');
   const [bio, setBio] = useState(profile?.bio || '');
+  const [optInConnect, setOptInConnect] = useState(profile?.optInConnect ?? true);
+  const [childAgeGroup, setChildAgeGroup] = useState(profile?.childAgeGroup || '0-5');
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -28,7 +30,9 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
         displayName,
         kommune,
         preferredLanguage: language,
-        bio
+        bio,
+        optInConnect,
+        childAgeGroup: childAgeGroup as '0-5' | '6-12' | '13+'
       });
       setSavedSuccess(true);
       setTimeout(() => setSavedSuccess(false), 2000);
@@ -140,6 +144,40 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
               placeholder="e.g. Immigrant parent of two, 5-year-old son recently diagnosed with autism in Gladsaxe. Looking for sensory-friendly activities and PPR support."
               className="w-full px-3 py-2 text-sm bg-white border border-[#d2ded8] rounded-xl focus:outline-hidden focus:ring-2 focus:ring-[#52776c] resize-none"
             />
+          </div>
+
+          <div className="bg-[#f0f6f2] p-4 rounded-xl border border-[#d4e3dc] space-y-3">
+            <div>
+              <label className="block text-xs font-bold text-[#1f352e] mb-1">
+                Child&apos;s Age Group
+              </label>
+              <select
+                value={childAgeGroup}
+                onChange={(e) => setChildAgeGroup(e.target.value as '0-5' | '6-12' | '13+')}
+                className="w-full px-3 py-2 text-xs bg-white border border-[#c9dad2] rounded-xl font-medium text-[#203630]"
+              >
+                <option value="0-5">0-5 (Early Intervention / Daycare)</option>
+                <option value="6-12">6-12 (School Age / Specialklasser)</option>
+                <option value="13+">13+ (Teens & Youth / Transition & STU)</option>
+              </select>
+            </div>
+
+            <label className="flex items-start gap-2.5 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={optInConnect}
+                onChange={(e) => setOptInConnect(e.target.checked)}
+                className="mt-0.5 rounded text-[#3f6158] focus:ring-[#3f6158] w-4 h-4 cursor-pointer"
+              />
+              <div>
+                <span className="text-xs font-bold text-[#1e342d] block">
+                  Opt-in to Local Kommune Directory
+                </span>
+                <span className="text-[11px] text-[#55736a] leading-tight block">
+                  Allow other special needs parents in {kommune} to view your username and reach out for peer support (no personal phone/address shared).
+                </span>
+              </div>
+            </label>
           </div>
 
           {/* Action buttons */}

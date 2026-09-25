@@ -23,6 +23,8 @@ import { useAuth } from '../context/AuthContext';
 import { ForumService, ForumPostItem, ForumCommentItem } from '../services/forumService';
 import { translateText, LANGUAGE_LABELS } from '../services/translationService';
 import { DANISH_KOMMUNER, SUPPORTED_LANGUAGES } from '../data/danishMunicipalities';
+import { AgeFilterChips, AgeTagSelector, AgeBadge } from './TagSystem';
+import { AudioRecorder, PostAudioPlayer } from './AudioAccessibility';
 
 const CATEGORIES = [
   { id: 'all', label: 'All Discussions', icon: MessageSquare, desc: 'All community topics' },
@@ -37,6 +39,7 @@ export const Forum: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth }) => {
   const [posts, setPosts] = useState<ForumPostItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedKommune, setSelectedKommune] = useState<string>('all');
+  const [selectedAgeTag, setSelectedAgeTag] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   
   // Post translation state map: { [postId]: { title: string, content: string, translated: boolean, lang: string } }
@@ -54,6 +57,9 @@ export const Forum: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth }) => {
   const [newTitle, setNewTitle] = useState('');
   const [newContent, setNewContent] = useState('');
   const [newCategory, setNewCategory] = useState<'ppr_viso' | 'school_education' | 'sensory_places' | 'local_meetups'>('ppr_viso');
+  const [newAgeTag, setNewAgeTag] = useState<'0-5' | '6-12' | '13+' | ''>('');
+  const [newAudioUrl, setNewAudioUrl] = useState<string | null>(null);
+  const [ageError, setAgeError] = useState(false);
   const [newKommune, setNewKommune] = useState(profile?.kommune || 'København');
   const [creating, setCreating] = useState(false);
 
@@ -128,6 +134,13 @@ export const Forum: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth }) => {
 
     if (!newTitle.trim() || !newContent.trim()) return;
 
+    // Validate mandatory age tag
+    if (!newAgeTag) {
+      setAgeError(true);
+      return;
+    }
+    setAgeError(false);
+
     setCreating(true);
     try {
       const created = await ForumService.createPost({
@@ -138,6 +151,8 @@ export const Forum: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth }) => {
         authorName: profile.displayName || 'Parent',
         authorKommune: newKommune,
         authorLanguage: profile.preferredLanguage || 'en',
+        ageTag: newAgeTag,
+        audioUrl: newAudioUrl || undefined,
         createdAt: new Date().toISOString()
       });
 
@@ -145,6 +160,8 @@ export const Forum: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth }) => {
       setShowCreateModal(false);
       setNewTitle('');
       setNewContent('');
+      setNewAgeTag('');
+      setNewAudioUrl(null);
     } catch (err) {
       console.error('Failed to create post:', err);
     } finally {
@@ -186,8 +203,13 @@ export const Forum: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth }) => {
     }
   };
 
-  // Filter posts by search query if any
+  // Filter posts by search query, category, kommune, and age tag
   const filteredPosts = posts.filter(p => {
+    // Age tag filter
+    if (selectedAgeTag !== 'all' && p.ageTag !== selectedAgeTag) {
+      return false;
+    }
+
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
     return p.title.toLowerCase().includes(q) || p.content.toLowerCase().includes(q) || p.authorKommune.toLowerCase().includes(q);
@@ -270,6 +292,14 @@ export const Forum: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth }) => {
             </button>
           );
         })}
+      </div>
+
+      {/* Age-Based Filtering Chips */}
+      <div className="bg-white p-3.5 rounded-2xl border border-[#d8e3dd] shadow-xs">
+        <AgeFilterChips 
+          selectedAgeTag={selectedAgeTag} 
+          onSelectAgeTag={(tagId: string) => setSelectedAgeTag(tagId)} 
+        />
       </div>
 
       {/* Filter and Search Bar */}
@@ -357,10 +387,13 @@ export const Forum: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth }) => {
                     </div>
                   </div>
 
-                  {/* Category Pill */}
-                  <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-[#e8f1ec] text-[#33534a]">
-                    {CATEGORIES.find(c => c.id === post.category)?.label || post.category}
-                  </span>
+                  {/* Category Pill & Age Badge */}
+                  <div className="flex items-center gap-1.5">
+                    {post.ageTag && <AgeBadge tagId={post.ageTag} />}
+                    <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-[#e8f1ec] text-[#33534a]">
+                      {CATEGORIES.find(c => c.id === post.category)?.label || post.category}
+                    </span>
+                  </div>
                 </div>
 
                 {/* Translation Banner if Active */}
@@ -383,9 +416,16 @@ export const Forum: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth }) => {
                 <h3 className="text-base sm:text-lg font-bold text-[#1e2f2a] mb-2 leading-snug">
                   {currentTitle}
                 </h3>
-                <div className="text-sm text-[#3b524c] whitespace-pre-line leading-relaxed mb-4">
+                <div className="text-sm text-[#3b524c] whitespace-pre-line leading-relaxed mb-3">
                   {currentBody}
                 </div>
+
+                {/* Voice Note & Text-to-Speech Player */}
+                <PostAudioPlayer 
+                  textContent={currentBody}
+                  audioUrl={post.audioUrl}
+                  language={preferredLang}
+                />
 
                 {/* Action Bar */}
                 <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#e2ece7] text-xs">
@@ -538,6 +578,13 @@ export const Forum: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth }) => {
                 />
               </div>
 
+              {/* Mandatory Child Age Selector */}
+              <AgeTagSelector 
+                selectedTag={newAgeTag}
+                onChange={(tag: any) => { setNewAgeTag(tag); setAgeError(false); }}
+                error={ageError}
+              />
+
               <div>
                 <label className="block text-xs font-semibold text-[#293e38] mb-1">
                   Relevant Danish Kommune
@@ -559,13 +606,20 @@ export const Forum: React.FC<{ onOpenAuth: () => void }> = ({ onOpenAuth }) => {
                 </label>
                 <textarea
                   required
-                  rows={5}
+                  rows={4}
                   value={newContent}
                   onChange={(e) => setNewContent(e.target.value)}
                   placeholder="Share details about what you are seeking or experiencing. You can write in English, Danish, or your native language; parents can translate it easily."
                   className="w-full px-3 py-2 text-sm bg-white border border-[#d2ded8] rounded-xl focus:outline-hidden focus:ring-2 focus:ring-[#52776c] resize-none"
                 />
               </div>
+
+              {/* Optional Voice Note Recording */}
+              <AudioRecorder 
+                onAudioRecorded={(blob: any, url: string) => setNewAudioUrl(url)}
+                onAudioCleared={() => setNewAudioUrl(null)}
+                existingAudioUrl={newAudioUrl}
+              />
 
               <div className="pt-2 border-t border-[#dce5e0] flex items-center justify-end gap-2">
                 <button
