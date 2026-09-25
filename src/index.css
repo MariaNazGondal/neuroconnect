@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+  body {
+    font-family: var(--font-sans);
+    background-color: #f7f9f8;
+    color: #243330;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Sensory-friendly mode adjustments */
+.low-sensory-mode {
+  --color-saturation: 85%;
+  filter: contrast(0.95);
+  letter-spacing: 0.015em;
+  line-height: 1.65;
+}
+
+.low-sensory-mode * {
+  transition-duration: 0.1s !important;
+}
+
+/* Custom Leaflet Map styling to maintain calming aesthetic */
+.leaflet-container {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  background-color: #e5ece9 !important;
+  z-index: 10 !important;
+}
+
+.custom-sensory-pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  box-shadow: 0 4px 12px rgba(36, 51, 48, 0.15);
+  transition: transform 0.2s ease;
+}
+.custom-sensory-pin:hover {
+  transform: scale(1.1);
+}

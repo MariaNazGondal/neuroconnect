@@ -1,0 +1,124 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Catch-all default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper Functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Entity Validations
+    function isValidUserProfile(data) {
+      return data.keys().hasAll(['uid', 'displayName', 'email', 'preferredLanguage', 'kommune'])
+        && data.uid is string && data.uid == request.auth.uid
+        && data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 100
+        && data.email is string && data.email.size() <= 150
+        && data.preferredLanguage is string && data.preferredLanguage.size() <= 10
+        && data.kommune is string && data.kommune.size() <= 80
+        && (!('bio' in data) || (data.bio is string && data.bio.size() <= 500));
+    }
+
+    function isValidForumPost(data) {
+      return data.keys().hasAll(['title', 'content', 'category', 'authorId', 'authorName', 'authorKommune', 'createdAt'])
+        && data.title is string && data.title.size() >= 3 && data.title.size() <= 200
+        && data.content is string && data.content.size() >= 5 && data.content.size() <= 5000
+        && data.category is string && data.category in ['ppr_viso', 'school_education', 'sensory_places', 'local_meetups']
+        && data.authorId is string && data.authorId == request.auth.uid
+        && data.authorName is string && data.authorName.size() <= 100
+        && data.authorKommune is string && data.authorKommune.size() <= 80
+        && data.createdAt is string;
+    }
+
+    function isValidForumComment(data) {
+      return data.keys().hasAll(['postId', 'content', 'authorId', 'authorName', 'createdAt'])
+        && data.postId is string && isValidId(data.postId)
+        && data.content is string && data.content.size() >= 1 && data.content.size() <= 2000
+        && data.authorId is string && data.authorId == request.auth.uid
+        && data.authorName is string && data.authorName.size() <= 100
+        && data.createdAt is string;
+    }
+
+    function isValidCommunityEvent(data) {
+      return data.keys().hasAll(['title', 'address', 'kommune', 'dateTime', 'isSunflowerLanyardFriendly', 'createdBy'])
+        && data.title is string && data.title.size() >= 3 && data.title.size() <= 150
+        && data.address is string && data.address.size() <= 200
+        && data.kommune is string && data.kommune.size() <= 80
+        && data.dateTime is string && data.dateTime.size() <= 80
+        && data.isSunflowerLanyardFriendly is bool
+        && data.createdBy is string && data.createdBy == request.auth.uid
+        && (!('description' in data) || (data.description is string && data.description.size() <= 3000))
+        && (!('category' in data) || (data.category is string && data.category in ['meetup', 'sensory_place', 'workshop', 'quiet_hour']))
+        && (!('sensoryNotes' in data) || (data.sensoryNotes is string && data.sensoryNotes.size() <= 500));
+    }
+
+    // 1. Users Collection
+    match /users/{userId} {
+      allow get: if isSignedIn();
+      allow list: if false; // Disallow listing full user database to protect privacy
+      allow create: if isOwner(userId) && isValidId(userId) && isValidUserProfile(incoming());
+      allow update: if isOwner(userId) && isValidUserProfile(incoming()) 
+        && incoming().uid == existing().uid
+        && incoming().email == existing().email;
+      allow delete: if false;
+    }
+
+    // 2. Forum Posts Collection
+    match /posts/{postId} {
+      allow read: if true; // Public read allows browsing without immediate friction
+      allow create: if isSignedIn() && isValidId(postId) && isValidForumPost(incoming());
+      allow update: if isSignedIn() && (
+        // Author updating content
+        (isOwner(existing().authorId) && isValidForumPost(incoming())
+          && incoming().authorId == existing().authorId
+          && incoming().createdAt == existing().createdAt)
+        ||
+        // Community reaction or comment counter bump
+        (incoming().diff(existing()).affectedKeys().hasOnly(['likesCount', 'commentsCount']))
+      );
+      allow delete: if isSignedIn() && isOwner(existing().authorId);
+
+      // Subcollection: Comments
+      match /comments/{commentId} {
+        allow read: if true;
+        allow create: if isSignedIn() && isValidId(commentId) && isValidForumComment(incoming())
+          && exists(/databases/$(database)/documents/posts/$(postId));
+        allow update: if isSignedIn() && isOwner(existing().authorId) && isValidForumComment(incoming())
+          && incoming().authorId == existing().authorId
+          && incoming().createdAt == existing().createdAt;
+        allow delete: if isSignedIn() && isOwner(existing().authorId);
+      }
+    }
+
+    // 3. Community Events Collection
+    match /events/{eventId} {
+      allow read: if true;
+      allow create: if isSignedIn() && isValidId(eventId) && isValidCommunityEvent(incoming());
+      allow update: if isSignedIn() && (
+        isOwner(existing().createdBy) && isValidCommunityEvent(incoming())
+          && incoming().createdBy == existing().createdBy
+      );
+      allow delete: if isSignedIn() && isOwner(existing().createdBy);
+    }
+  }
+}
