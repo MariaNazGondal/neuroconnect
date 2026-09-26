@@ -42,10 +42,44 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const createDefaultParentProfile = (overrides?: Partial<UserProfileData>): UserProfileData => ({
+  uid: 'parent-' + Math.random().toString(36).substring(2, 9),
+  displayName: 'Parent in Denmark 🌻',
+  email: 'parent@community.autismdk.org',
+  preferredLanguage: 'en',
+  kommune: 'København',
+  optInConnect: true,
+  bio: 'Parent navigating autism and special needs in Denmark.',
+  childAgeGroup: '6-12',
+  createdAt: new Date().toISOString(),
+  ...overrides,
+});
+
+const getSavedLocalProfile = (): UserProfileData => {
+  try {
+    const saved = localStorage.getItem('autismdk_user_profile') || sessionStorage.getItem('neuroconnect_demo_user');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && parsed.displayName) {
+        return parsed;
+      }
+    }
+  } catch (e) {
+    console.warn('Could not parse saved local profile:', e);
+  }
+  const initial = createDefaultParentProfile();
+  try {
+    localStorage.setItem('autismdk_user_profile', JSON.stringify(initial));
+  } catch {
+    // ignore storage quota issues
+  }
+  return initial;
+};
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<UserProfileData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<UserProfileData>(getSavedLocalProfile);
+  const [loading, setLoading] = useState(false);
   const [lowSensoryMode, setLowSensoryMode] = useState<boolean>(() => {
     return localStorage.getItem('neuroconnect_sensory_mode') === 'true';
   });
@@ -69,26 +103,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [lowSensoryMode]);
 
-  // Sync auth state
+  // Sync Firebase auth state if available, but never block or wipe the local profile
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
         await loadOrCreateUserProfile(currentUser);
-      } else {
-        // Check if demo user is stored in session
-        const cachedDemo = sessionStorage.getItem('neuroconnect_demo_user');
-        if (cachedDemo) {
-          try {
-            setProfile(JSON.parse(cachedDemo));
-          } catch {
-            setProfile(null);
-          }
-        } else {
-          setProfile(null);
-        }
       }
-      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -229,9 +250,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } catch (err) {
         handleFirestoreError(err, OperationType.UPDATE, `users/${profile.uid}`);
       }
-    } else {
-      // Demo mode session update
-      sessionStorage.setItem('neuroconnect_demo_user', JSON.stringify(updated));
+    }
+    
+    // Always persist to local browser storage so the parent never loses their settings
+    try {
+      localStorage.setItem('autismdk_user_profile', JSON.stringify(updated));
+    } catch {
+      // ignore
     }
     setProfile(updated);
   };
@@ -242,26 +267,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     customName?: string,
     customEmail?: string
   ) => {
-    const demoProfile: UserProfileData = {
-      uid: `parent-guest-${Date.now()}`,
-      displayName: customName || 'Parent in Denmark',
-      email: customEmail || 'parent.guest@autismdk.org',
+    const demoProfile: UserProfileData = createDefaultParentProfile({
+      displayName: customName || 'Parent in Denmark 🌻',
+      email: customEmail || 'parent@community.autismdk.org',
       preferredLanguage: lang,
       kommune: kommune,
-      optInConnect: true,
       bio: `Parent connecting from ${kommune}. Here for peer advice and special needs resources.`,
-      createdAt: new Date().toISOString()
-    };
-    sessionStorage.setItem('neuroconnect_demo_user', JSON.stringify(demoProfile));
+    });
+    try {
+      localStorage.setItem('autismdk_user_profile', JSON.stringify(demoProfile));
+    } catch {
+      // ignore
+    }
     setProfile(demoProfile);
   };
 
   const logout = async () => {
-    sessionStorage.removeItem('neuroconnect_demo_user');
-    setProfile(null);
-    if (auth.currentUser) {
-      await signOut(auth);
+    try {
+      localStorage.removeItem('autismdk_user_profile');
+      sessionStorage.removeItem('neuroconnect_demo_user');
+    } catch {
+      // ignore
     }
+    if (auth.currentUser) {
+      try {
+        await signOut(auth);
+      } catch {
+        // ignore
+      }
+    }
+    // Generate fresh local parent session so the user never encounters broken pages or blocked UI
+    const fresh = createDefaultParentProfile();
+    try {
+      localStorage.setItem('autismdk_user_profile', JSON.stringify(fresh));
+    } catch {
+      // ignore
+    }
+    setProfile(fresh);
   };
 
   return (

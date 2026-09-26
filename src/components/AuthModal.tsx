@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { X, Sparkles, Mail, Lock, User, Globe, MapPin, CheckCircle2, ArrowRight } from 'lucide-react';
+import { X, Sparkles, Mail, Lock, User, Globe, MapPin, CheckCircle2, ArrowRight, AlertTriangle, ExternalLink, Info } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { DANISH_KOMMUNER, SUPPORTED_LANGUAGES } from '../data/danishMunicipalities';
+import { firebaseConfig } from '../firebase/config';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -21,6 +22,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
   const [language, setLanguage] = useState('en');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const [showConfigDetails, setShowConfigDetails] = useState(false);
 
   if (!isOpen) return null;
 
@@ -155,8 +158,39 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
         {/* Content */}
         <div className="p-6 space-y-4">
           {errorMsg && (
-            <div className="p-3 text-xs text-[#703b3b] bg-[#fbeded] border border-[#ebd0d0] rounded-xl">
-              {errorMsg}
+            <div className="p-4 text-xs bg-[#fbeded] border border-[#ebd0d0] rounded-xl text-[#6b3535] space-y-2.5">
+              <div className="flex items-start gap-2.5">
+                <AlertTriangle className="w-4 h-4 text-[#c0392b] shrink-0 mt-0.5" />
+                <div className="flex-1 space-y-2">
+                  <p className="font-semibold text-[#822d2d]">{errorMsg}</p>
+
+                  {(errorMsg.includes('Firebase Console') || errorMsg.includes('operation-not-allowed')) && (
+                    <div className="pt-2 border-t border-[#e8cece] space-y-2 text-[11px] text-[#593030]">
+                      <div className="font-bold text-[#451f1f] flex items-center gap-1.5">
+                        <span>How to enable Email/Password in Firebase:</span>
+                      </div>
+                      <ol className="list-decimal list-inside space-y-1 pl-1 font-mono text-[10px] leading-relaxed bg-[#f6e4e4] p-2.5 rounded-lg border border-[#edd1d1]">
+                        <li>Open <a href="https://console.firebase.google.com/" target="_blank" rel="noreferrer" className="underline font-bold text-[#1f4e42] inline-flex items-center gap-0.5">console.firebase.google.com <ExternalLink className="w-2.5 h-2.5" /></a></li>
+                        <li>Select project: <span className="font-bold text-[#1b3d34]">{firebaseConfig.projectId}</span></li>
+                        <li>In left sidebar under <strong>Build</strong>, click <strong>Authentication</strong></li>
+                        <li>Click the <strong>Sign-in method</strong> tab</li>
+                        <li>Click <strong>Email/Password</strong> &rarr; Toggle <strong>Enable</strong> &rarr; Click <strong>Save</strong></li>
+                      </ol>
+
+                      <div className="pt-1">
+                        <button
+                          type="button"
+                          onClick={handleDemoSignIn}
+                          className="w-full py-2 px-3 bg-[#3f6158] hover:bg-[#324f47] text-white font-semibold rounded-lg shadow-2xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer text-xs"
+                        >
+                          <span>⚡ Enter as Parent Guest right now (No waiting)</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           )}
 
@@ -308,6 +342,27 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
               <span>Instant Guest Mode</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
+          </div>
+
+          {/* Firebase Configuration Inspector Toggle */}
+          <div className="pt-2 border-t border-[#e2eae6]">
+            <button
+              type="button"
+              onClick={() => setShowConfigDetails(!showConfigDetails)}
+              className="text-[11px] text-[#638077] hover:text-[#243f36] flex items-center gap-1 font-medium transition-colors"
+            >
+              <Info className="w-3 h-3" />
+              <span>{showConfigDetails ? 'Hide' : 'Check'} Firebase Auth Provider Mapping</span>
+            </button>
+
+            {showConfigDetails && (
+              <div className="mt-2 p-2.5 bg-[#eaf2ee] rounded-lg border border-[#d2ded8] text-[10px] font-mono text-[#26443c] space-y-1">
+                <div><strong>Project ID:</strong> {firebaseConfig.projectId}</div>
+                <div><strong>Auth Domain:</strong> {firebaseConfig.authDomain}</div>
+                <div><strong>API Key Status:</strong> {firebaseConfig.apiKey.startsWith('mock') ? '⚠️ Fallback Mock Key' : '✅ Active Configured Key'}</div>
+                <div><strong>Database:</strong> {firebaseConfig.firestoreDatabaseId}</div>
+              </div>
+            )}
           </div>
         </div>
 

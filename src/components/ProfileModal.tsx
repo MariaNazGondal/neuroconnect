@@ -59,13 +59,13 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
               {displayName.charAt(0).toUpperCase() || 'P'}
             </div>
             <div>
-              <h2 className="text-base font-bold text-[#1f312c]">Parent Profile Settings</h2>
-              <p className="text-xs text-[#526a63]">{profile.email}</p>
+              <h2 className="text-base font-bold text-[#1f312c]">Parent Profile & Kommune Settings</h2>
+              <p className="text-xs text-[#526a63]">Saved locally in your browser • No registration required</p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="p-1.5 text-[#5e7771] hover:text-[#233530] hover:bg-[#dce6e1] rounded-full transition-colors"
+            className="p-1.5 text-[#5e7771] hover:text-[#233530] hover:bg-[#dce6e1] rounded-full transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -73,6 +73,11 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
 
         {/* Form Body */}
         <form onSubmit={handleSave} className="p-6 space-y-4">
+          <div className="p-3 bg-[#e8f1ec] border border-[#cfdfd6] rounded-xl text-xs text-[#28463d] flex items-center gap-2">
+            <span className="text-base">🌻</span>
+            <span>You have full instant access to all 98 Kommuner, letter decoding, and peer channels without needing an account or password.</span>
+          </div>
+
           {savedSuccess && (
             <div className="p-3 text-xs text-[#285042] bg-[#e6f3ec] border border-[#c4e3d3] rounded-xl flex items-center gap-2">
               <Check className="w-4 h-4 text-emerald-600" />
@@ -185,10 +190,10 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
             <button
               type="button"
               onClick={handleLogout}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#7d3f3f] hover:bg-[#faeded] rounded-lg transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#7d3f3f] hover:bg-[#faeded] rounded-lg transition-colors cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5" />
-              <span>Sign Out</span>
+              <span>Reset to Fresh Session</span>
             </button>
 
             <button

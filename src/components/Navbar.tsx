@@ -26,6 +26,7 @@ interface NavbarProps {
   onSelectTab: (tab: 'dashboard' | 'forum' | 'map' | 'glossary' | 'decoder' | 'exchange' | 'hub' | 'rights') => void;
   onOpenAuth: () => void;
   onOpenProfile: () => void;
+  onOpenTour?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -33,6 +34,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSelectTab,
   onOpenAuth,
   onOpenProfile,
+  onOpenTour,
 }) => {
   const { profile, lowSensoryMode, toggleLowSensoryMode } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -163,6 +165,18 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Sensory Mode Toggle & User Profile Controls */}
           <div className="flex items-center gap-2">
             
+            {/* Guided Tour Launcher */}
+            {onOpenTour && (
+              <button
+                onClick={onOpenTour}
+                title="Open AutismDK guided feature tour"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-colors border bg-[#e8f1ec] text-[#244238] border-[#cddcd4] hover:bg-[#d9e7e0] cursor-pointer"
+              >
+                <span>🌻</span>
+                <span className="hidden sm:inline">Tour</span>
+              </button>
+            )}
+
             {/* Sensory Mode Button */}
             <button
               onClick={toggleLowSensoryMode}
@@ -294,6 +308,16 @@ export const Navbar: React.FC<NavbarProps> = ({
             <BookOpen className="w-4 h-4 text-[#52776c]" />
             <span>Danish System Glossary</span>
           </button>
+
+          {onOpenTour && (
+            <button
+              onClick={() => { onOpenTour(); setMobileMenuOpen(false); }}
+              className="w-full flex items-center gap-3 px-3 py-2 text-sm font-bold rounded-lg text-left bg-[#e4ede8] text-[#244238] border border-[#cddcd4]"
+            >
+              <span className="text-base">🌻</span>
+              <span>AutismDK Guided Tour</span>
+            </button>
+          )}
 
           {profile && (
             <button

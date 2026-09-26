@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
 import { Dashboard } from './components/Dashboard';
@@ -16,13 +16,28 @@ import { LocalHub } from './components/LocalHub';
 import { RightsAssistant } from './components/RightsAssistant';
 import { AuthModal } from './components/AuthModal';
 import { ProfileModal } from './components/ProfileModal';
+import { GuidedTourModal } from './components/GuidedTourModal';
 import { Heart, Globe, Shield, Sparkles, MapPin } from 'lucide-react';
 
 function AppContent() {
   const [currentTab, setCurrentTab] = useState<'dashboard' | 'forum' | 'map' | 'glossary' | 'decoder' | 'exchange' | 'hub' | 'rights'>('dashboard');
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isTourOpen, setIsTourOpen] = useState(false);
   const { profile } = useAuth();
+
+  // Automatically trigger guided tour overlay upon first login
+  useEffect(() => {
+    if (profile) {
+      const tourSeen = localStorage.getItem('autismdk_tour_completed_v1');
+      if (!tourSeen) {
+        const timer = setTimeout(() => {
+          setIsTourOpen(true);
+        }, 500);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [profile]);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f7f9f8] text-[#243330] selection:bg-[#d8e7e1] selection:text-[#18312a]">
@@ -33,6 +48,7 @@ function AppContent() {
         onSelectTab={setCurrentTab}
         onOpenAuth={() => setIsAuthOpen(true)}
         onOpenProfile={() => setIsProfileOpen(true)}
+        onOpenTour={() => setIsTourOpen(true)}
       />
 
       {/* Main Content Area */}
@@ -42,6 +58,7 @@ function AppContent() {
             onSelectTab={setCurrentTab}
             onOpenAuth={() => setIsAuthOpen(true)}
             onOpenProfile={() => setIsProfileOpen(true)}
+            onOpenTour={() => setIsTourOpen(true)}
           />
         )}
 
@@ -129,6 +146,12 @@ function AppContent() {
       <ProfileModal
         isOpen={isProfileOpen}
         onClose={() => setIsProfileOpen(false)}
+      />
+
+      <GuidedTourModal
+        isOpen={isTourOpen}
+        onClose={() => setIsTourOpen(false)}
+        onNavigateTab={setCurrentTab}
       />
 
     </div>

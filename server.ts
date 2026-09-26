@@ -142,7 +142,7 @@ async function startServer() {
   } else {
     const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
-      server: { middlewareMode: true, host: '0.0.0.0', port: PORT },
+      server: { middlewareMode: true, host: '0.0.0.0', port: PORT, hmr: false },
       appType: 'spa',
     });
     app.use(vite.middlewares);

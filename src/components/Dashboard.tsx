@@ -27,12 +27,14 @@ interface DashboardProps {
   onSelectTab: (tab: 'dashboard' | 'forum' | 'map' | 'glossary' | 'decoder' | 'exchange' | 'hub' | 'rights') => void;
   onOpenAuth: () => void;
   onOpenProfile: () => void;
+  onOpenTour?: () => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
   onSelectTab,
   onOpenAuth,
-  onOpenProfile
+  onOpenProfile,
+  onOpenTour,
 }) => {
   const { profile } = useAuth();
 
@@ -83,23 +85,39 @@ export const Dashboard: React.FC<DashboardProps> = ({
               >
                 Change Preferences
               </button>
+              {onOpenTour && (
+                <button
+                  onClick={onOpenTour}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#e4ede8] hover:bg-[#d5e4dc] text-xs font-bold text-[#27443c] rounded-xl border border-[#c4d6cd] transition-colors ml-auto shadow-2xs cursor-pointer"
+                >
+                  <span>🌻 Guided Tour</span>
+                </button>
+              )}
             </div>
           ) : (
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <button
                 onClick={onOpenAuth}
-                className="flex items-center gap-2 px-5 py-2.5 bg-[#3c5e55] hover:bg-[#2f4b43] text-white font-semibold text-sm rounded-xl shadow-xs transition-transform transform hover:-translate-y-0.5"
+                className="flex items-center gap-2 px-5 py-2.5 bg-[#3c5e55] hover:bg-[#2f4b43] text-white font-semibold text-sm rounded-xl shadow-xs transition-transform transform hover:-translate-y-0.5 cursor-pointer"
               >
                 <span>Join Community (Free)</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
               <button
                 onClick={() => onSelectTab('glossary')}
-                className="flex items-center gap-2 px-4 py-2.5 bg-white/80 hover:bg-white text-[#38554d] border border-[#d4e1db] font-semibold text-sm rounded-xl transition-colors"
+                className="flex items-center gap-2 px-4 py-2.5 bg-white/80 hover:bg-white text-[#38554d] border border-[#d4e1db] font-semibold text-sm rounded-xl transition-colors cursor-pointer"
               >
                 <BookOpen className="w-4 h-4 text-[#547a6f]" />
                 <span>Browse Danish Glossary</span>
               </button>
+              {onOpenTour && (
+                <button
+                  onClick={onOpenTour}
+                  className="flex items-center gap-2 px-4 py-2.5 bg-[#e5efe9] hover:bg-[#d6e5dd] text-[#24423a] border border-[#c8dad0] font-bold text-sm rounded-xl transition-colors cursor-pointer shadow-2xs"
+                >
+                  <span>🌻 Guided Tour</span>
+                </button>
+              )}
             </div>
           )}
         </div>
