@@ -1,6 +1,6 @@
 /**
- * Translation service for NeuroConnect DK
- * Simulates and provides high-fidelity translations into immigrant parents' preferred languages
+ * Translation service for AutismDK
+ * Provides high-fidelity translations into immigrant parents' preferred languages
  * (English, Dansk, Arabic, Ukrainian, Turkish, Somali, Polish, Persian/Dari, Urdu, Spanish)
  */
 

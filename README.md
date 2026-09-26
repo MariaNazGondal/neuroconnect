@@ -1,4 +1,4 @@
-# 🌻 NeuroConnect DK
+# 🌻 AutismDK
 
 > **A sensory-friendly multilingual community platform for immigrant parents of children with autism and special needs in Denmark.**
 
@@ -11,11 +11,11 @@
 
 ---
 
-## 🌟 Why NeuroConnect DK?
+## 🌟 Why AutismDK?
 
 Navigating the Danish social and pedagogical system (*PPR, VISO, Barnets Lov, Folkeskolen*) is complex—and even harder when Danish is not your native language.
 
-**NeuroConnect DK** bridges this gap by providing:
+**AutismDK** bridges this gap by providing:
 - 🇩🇰 **Local Kommune Connection**: Filter discussions, advice, and local events across all 98 Danish municipalities (*København, Aarhus, Albertslund, Odense, etc.*).
 - 🌐 **1-Click Multilingual Translation**: Read and write posts in your native language (*English, Dansk, العربية, Українська, Türkçe, Soomaali, Polski, فارسی, and more*).
 - 🌻 **Sunflower Lanyard (Solsikkesnoren) Map**: An interactive map pinpointing sensory-friendly locations, quiet museum hours, low-noise playgrounds, and parent support circles.
@@ -185,7 +185,7 @@ Contributions from parents, special education professionals, and developers are 
 
 ## 📜 Disclaimer & Legal Note
 
-NeuroConnect DK is a peer-led community initiative. Information provided in the Danish System Glossary is for educational and peer-support purposes only and does not constitute formal legal counsel. Always consult your municipal case worker (*sagsbehandler*), PPR office, or an authorized attorney for binding decisions.
+AutismDK is a peer-led community initiative. Information provided in the Danish System Glossary is for educational and peer-support purposes only and does not constitute formal legal counsel. Always consult your municipal case worker (*sagsbehandler*), PPR office, or an authorized attorney for binding decisions.
 
 ---
 

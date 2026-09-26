@@ -1,13 +1,9 @@
 import express, { Request, Response } from 'express';
-import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { GoogleGenAI } from '@google/genai';
 
 dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
@@ -137,10 +133,11 @@ Always remember to contact your local Kommune sagsbehandler (case worker) for of
 // Setup Vite middleware in dev or static files in production
 async function startServer() {
   if (process.env.NODE_ENV === 'production') {
-    const distPath = path.resolve(__dirname, 'dist');
+    const distPath = fileURLToPath(new URL('./dist', import.meta.url));
+    const indexPath = fileURLToPath(new URL('./dist/index.html', import.meta.url));
     app.use(express.static(distPath));
     app.get('*', (_req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
+      res.sendFile(indexPath);
     });
   } else {
     const { createServer: createViteServer } = await import('vite');
@@ -152,7 +149,7 @@ async function startServer() {
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`NeuroConnect DK server running on http://localhost:${PORT}`);
+    console.log(`AutismDK server running on http://localhost:${PORT}`);
   });
 }
 

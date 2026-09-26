@@ -64,6 +64,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
         setErrorMsg('Password should be at least 6 characters.');
       } else if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password') {
         setErrorMsg('Invalid email or password.');
+      } else if (err.code === 'auth/operation-not-allowed' || err.message?.includes('operation-not-allowed')) {
+        setErrorMsg('Firebase Email sign-up needs to be enabled in Firebase Console (Authentication > Sign-in method). Click "1-Click Instant Join" below to enter immediately with your details!');
       } else {
         setErrorMsg(err.message || 'Authentication error. Please try again.');
       }
@@ -74,7 +76,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
 
   const handleDemoSignIn = async () => {
     setLoading(true);
-    await loginAsGuestDemo(kommune, language);
+    await loginAsGuestDemo(kommune, language, name.trim() || undefined, email.trim() || undefined);
     setLoading(false);
     onClose();
     onSuccess?.();
@@ -95,8 +97,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
 
           <div className="flex items-center gap-2 mb-2">
             <span className="text-2xl">🌻</span>
-            <span className="text-xs font-semibold tracking-wider uppercase text-[#476a60] bg-[#dbe8e2] px-2.5 py-0.5 rounded-full">
-              NeuroConnect DK
+            <span className="text-xs font-bold tracking-wider uppercase text-[#294c41] bg-[#dbe8e2] px-2.5 py-0.5 rounded-full">
+              AutismDK
             </span>
           </div>
 
@@ -104,8 +106,24 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
             {mode === 'signup' ? 'Join Our Parent Community' : 'Welcome Back'}
           </h2>
           <p className="text-xs text-[#526a63] mt-1">
-            Free, safe, and sensory-friendly support for immigrant families of children with special needs and autism in Denmark.
+            Free, safe, and sensory-friendly support for immigrant families of children with autism and special needs in Denmark.
           </p>
+
+          {/* 1-Click Instant Access Banner for easy parent onboarding */}
+          <div className="mt-3 p-3 bg-[#e8f3ed] rounded-xl border border-[#cbe3d5] flex items-center justify-between gap-2">
+            <div className="text-xs text-[#26483d]">
+              <span className="font-bold block">Need instant access?</span>
+              <span className="text-[11px] text-[#4f6e64]">No password needed. Join with 1 click.</span>
+            </div>
+            <button
+              type="button"
+              onClick={handleDemoSignIn}
+              disabled={loading}
+              className="px-3 py-1.5 bg-[#3f6158] hover:bg-[#324f47] text-white text-xs font-bold rounded-lg shadow-2xs transition-colors shrink-0 cursor-pointer"
+            >
+              ⚡ 1-Click Join
+            </button>
+          </div>
 
           {/* Mode Switch Tabs */}
           <div className="flex gap-2 mt-4 p-1 bg-[#dbe7e1] rounded-xl">

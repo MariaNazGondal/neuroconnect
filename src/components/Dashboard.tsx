@@ -53,7 +53,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <div className="max-w-3xl relative z-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#d5e4dc] rounded-full text-xs font-semibold text-[#29463e] mb-4">
             <span className="text-base">🌻</span>
-            <span>NeuroConnect DK • For immigrant parents of children with autism in Denmark</span>
+            <span>AutismDK • Simple parent support for special needs in Denmark</span>
           </div>
 
           <h1 className="text-2xl sm:text-4xl font-extrabold text-[#192f28] tracking-tight leading-tight">

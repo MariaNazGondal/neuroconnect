@@ -81,9 +81,9 @@ function AppContent() {
             <div className="flex items-center gap-2.5">
               <span className="text-xl">🌻</span>
               <div>
-                <span className="font-bold text-sm text-[#1e312b]">NeuroConnect DK</span>
+                <span className="font-bold text-sm text-[#1e312b]">AutismDK</span>
                 <p className="text-[11px] text-[#647f77]">
-                  Multilingual parent-led support community for autism and special needs in Denmark
+                  Multilingual community for parents of children with autism & special needs across Denmark
                 </p>
               </div>
             </div>
@@ -109,10 +109,10 @@ function AppContent() {
 
           <div className="pt-4 border-t border-[#dce6e1] flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-[#6d8680]">
             <p>
-              Supporting Danish Municipalities (Kommuner) • Solsikkeprogrammet friendly • Not affiliated with the Danish government.
+              🌻 Solsikkeprogrammet friendly • Supporting families in all 98 Danish Kommuner • Free & non-profit community
             </p>
             <p className="flex items-center gap-1.5">
-              <span>Sensory-friendly design</span>
+              <span>Sensory-friendly</span>
               <span>•</span>
               <span>Always consult official Danish authorities (PPR, VISO, Sagsbehandler) for binding legal decisions</span>
             </p>

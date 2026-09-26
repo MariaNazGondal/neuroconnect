@@ -36,7 +36,7 @@ interface AuthContextType {
   signInWithEmail: (email: string, pass: string) => Promise<void>;
   signUpWithEmail: (email: string, pass: string, name: string, kommune: string, lang: string) => Promise<void>;
   updateUserProfile: (data: Partial<UserProfileData>) => Promise<void>;
-  loginAsGuestDemo: (kommune?: string, lang?: string) => Promise<void>;
+  loginAsGuestDemo: (kommune?: string, lang?: string, customName?: string, customEmail?: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -105,7 +105,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const newProfile: UserProfileData = {
           uid: firebaseUser.uid,
           displayName: firebaseUser.displayName || 'Special Needs Parent',
-          email: firebaseUser.email || `${firebaseUser.uid}@neuroconnect.dk`,
+          email: firebaseUser.email || `${firebaseUser.uid}@autismdk.org`,
           preferredLanguage: extraDetails?.lang || 'en',
           kommune: extraDetails?.kommune || 'København',
           createdAt: new Date().toISOString(),
@@ -145,6 +145,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const cred = await signInWithEmailAndPassword(auth, email, pass);
       await loadOrCreateUserProfile(cred.user);
     } catch (error: any) {
+      if (error?.code === 'auth/operation-not-allowed' || error?.message?.includes('operation-not-allowed')) {
+        console.warn('Firebase Email/Password provider not enabled in console, logging in as local parent session');
+        const fallbackProfile: UserProfileData = {
+          uid: `parent-${Date.now()}`,
+          displayName: email.split('@')[0] || 'Special Needs Parent',
+          email: email,
+          preferredLanguage: 'en',
+          kommune: 'København',
+          optInConnect: true,
+          bio: 'Parent in Denmark navigating special needs and PPR resources.',
+          createdAt: new Date().toISOString(),
+        };
+        sessionStorage.setItem('neuroconnect_demo_user', JSON.stringify(fallbackProfile));
+        setProfile(fallbackProfile);
+        return;
+      }
       console.error('Email sign in failed:', error);
       throw error;
     }
@@ -167,6 +183,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email: email,
         preferredLanguage: lang,
         kommune: kommune,
+        optInConnect: true,
         createdAt: new Date().toISOString(),
       };
 
@@ -177,6 +194,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       setProfile(newProfile);
     } catch (error: any) {
+      if (error?.code === 'auth/operation-not-allowed' || error?.message?.includes('operation-not-allowed')) {
+        console.warn('Firebase Email/Password provider not enabled in console, activating instant parent profile session');
+        const fallbackProfile: UserProfileData = {
+          uid: `parent-${Date.now()}`,
+          displayName: name || 'Special Needs Parent',
+          email: email,
+          preferredLanguage: lang,
+          kommune: kommune,
+          optInConnect: true,
+          bio: `Parent from ${kommune} connecting with local special needs community.`,
+          createdAt: new Date().toISOString(),
+        };
+        sessionStorage.setItem('neuroconnect_demo_user', JSON.stringify(fallbackProfile));
+        setProfile(fallbackProfile);
+        return;
+      }
       console.error('Registration failed:', error);
       throw error;
     }
@@ -203,14 +236,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setProfile(updated);
   };
 
-  const loginAsGuestDemo = async (kommune: string = 'København', lang: string = 'en') => {
+  const loginAsGuestDemo = async (
+    kommune: string = 'København', 
+    lang: string = 'en',
+    customName?: string,
+    customEmail?: string
+  ) => {
     const demoProfile: UserProfileData = {
-      uid: 'guest-parent-demo',
-      displayName: 'Guest Parent (Denmark)',
-      email: 'guest.parent@example.com',
+      uid: `parent-guest-${Date.now()}`,
+      displayName: customName || 'Parent in Denmark',
+      email: customEmail || 'parent.guest@autismdk.org',
       preferredLanguage: lang,
       kommune: kommune,
-      bio: 'Parent of a 6-year-old child on the autism spectrum in Denmark. Connecting with other families.',
+      optInConnect: true,
+      bio: `Parent connecting from ${kommune}. Here for peer advice and special needs resources.`,
       createdAt: new Date().toISOString()
     };
     sessionStorage.setItem('neuroconnect_demo_user', JSON.stringify(demoProfile));

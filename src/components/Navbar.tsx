@@ -49,13 +49,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => { onSelectTab('dashboard'); setMobileMenuOpen(false); }}
             className="flex items-center gap-2.5 cursor-pointer group"
           >
-            <div className="w-10 h-10 rounded-2xl bg-[#4d6b63] text-white flex items-center justify-center shadow-xs group-hover:bg-[#3d564f] transition-colors">
+            <div className="w-10 h-10 rounded-2xl bg-[#3f6158] text-white flex items-center justify-center shadow-xs group-hover:bg-[#324f47] transition-colors">
               <span className="text-xl">🌻</span>
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-semibold text-lg tracking-tight text-[#1e2d29]">NeuroConnect</span>
-                <span className="px-1.5 py-0.5 text-[11px] font-bold rounded-md bg-[#dce7e2] text-[#335048]">DK</span>
+                <span className="font-bold text-lg tracking-tight text-[#1a2d27]">AutismDK</span>
+                <span className="px-1.5 py-0.2 text-[10px] font-bold rounded-md bg-[#dce7e2] text-[#335048]">Sol 🌻</span>
               </div>
               <p className="text-[11px] text-[#5c726c] hidden sm:block">Special Needs Parent Community in Denmark</p>
             </div>

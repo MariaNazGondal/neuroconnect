@@ -141,7 +141,7 @@ export function ResourceMarket({ onOpenAuth }) {
       return;
     }
     setActiveItemForMessage(item);
-    setMessageText(`Hej ${item.parentName}! I saw your listing for "${item.title}" on NeuroConnect DK. Is it still available? We live in ${profile.kommune || 'Denmark'} and would love to pick it up.`);
+    setMessageText(`Hej ${item.parentName}! I saw your listing for "${item.title}" on AutismDK. Is it still available? We live in ${profile.kommune || 'Denmark'} and would love to pick it up.`);
     setMessageSent(false);
   };
 

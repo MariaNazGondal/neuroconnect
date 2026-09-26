@@ -1,4 +1,4 @@
-# NeuroConnect DK - Firestore Security Specification
+# AutismDK - Firestore Security Specification
 
 ## 1. Data Invariants
 1. **UserProfile Invariant**: A user profile document `/users/{userId}` can only be created and updated by the authenticated user whose `request.auth.uid == userId`. Email must match the authenticated token.

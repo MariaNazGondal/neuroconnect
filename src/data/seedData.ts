@@ -223,7 +223,7 @@ export const SEED_EVENTS: SeedEvent[] = [
     category: 'meetup',
     sensoryNotes: 'Quiet meeting room (Lokale 3) with soft acoustic baffles, low background noise, soft warm lighting, tea and quiet sensory fidget toys provided.',
     createdBy: 'user-seed-samira',
-    createdByName: 'Samira Noor (NeuroConnect DK)',
+    createdByName: 'Samira Noor (AutismDK)',
     createdAt: '2026-03-16T12:00:00Z'
   },
   {

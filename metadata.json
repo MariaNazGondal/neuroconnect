@@ -1,6 +1,6 @@
 {
-  "name": "NeuroConnect DK",
-  "description": "A sensory-friendly multilingual community platform for immigrant parents of children with autism and special needs in Denmark, featuring local kommune connections, autism-friendly events map, Danish system glossary, and community forums.",
+  "name": "AutismDK",
+  "description": "A sensory-friendly multilingual community platform for immigrant parents of children with autism and special needs in Denmark, featuring local kommune connections, Danish rights AI, letter decoder, events map, and parent support.",
   "requestFramePermissions": [
     "geolocation"
   ],
