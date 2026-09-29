@@ -74,7 +74,7 @@ Navigating the Danish social and pedagogical system (*PPR, VISO, Barnets Lov, Fo
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/your-username/neuroconnect-dk.git
+git clone https://github.com/MariaNazGondal/neuroconnect-dk.git
 cd neuroconnect-dk
 ```
 
